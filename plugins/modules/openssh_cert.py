@@ -327,6 +327,7 @@ class Certificate(OpensshModule):
         self.type = self.module.params['type']
         self.use_agent = self.module.params['use_agent']
         self.valid_at = self.module.params['valid_at']
+        self.ignore_serial_number = self.module.params['ignore_serial_number']
         self.ignore_timestamps = self.module.params['ignore_timestamps']
 
         self._check_if_base_dir(self.path)
@@ -421,7 +422,7 @@ class Certificate(OpensshModule):
         return all([
             set(self.original_data.principals) == set(self.principals),
             self.original_data.signature_type == self.signature_algorithm if self.signature_algorithm else True,
-            self.original_data.serial == self.serial_number if self.serial_number is not None else True,
+            self._compare_serial_parameters(),
             self.original_data.type == self.type,
             self._compare_time_parameters(),
         ])
@@ -442,6 +443,12 @@ class Certificate(OpensshModule):
             original_time_parameters == self.time_parameters,
             original_time_parameters.within_range(self.valid_at)
         ])
+
+    def _compare_serial_parameters(self):
+        if self.ignore_serial_number or self.serial_number is None:
+            return True
+
+        return self.original_data.serial_number == self.serial_number
 
     def _compare_options(self):
         try:
