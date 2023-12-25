@@ -145,6 +145,13 @@ options:
                Time will always be interpreted as UTC. Mainly to be used with relative timespec for O(valid_from) and / or O(valid_to).
                Note that if using relative time this module is NOT idempotent."
         type: str
+    ignore_serial_number:
+        description:
+            - "Whether the O(serial_number) should be ignored for idempotency checks."
+            - "However, the value will still be applied to a new certificate if it meets any other necessary conditions for generation/regeneration."
+        type: bool
+        default: false
+        version_added: 2.18.0
     ignore_timestamps:
         description:
             - "Whether the O(valid_from) and O(valid_to) timestamps should be ignored for idempotency checks."
@@ -190,6 +197,7 @@ options:
                The certificate serial number may be used in a KeyRevocationList.
                The serial number may be omitted for checks, but must be specified again for a new certificate.
                Note: The default value set by ssh-keygen is 0."
+            - "To ignore this value during comparison with an existing certificate set O(ignore_serial_number=true)."
         type: int
 '''
 
